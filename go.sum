@@ -27,6 +27,8 @@ github.com/jrick/logrotate v1.0.0/go.mod h1:LNinyqDIJnpAur+b8yyulnQw/wDuN1+BYKlT
 github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23/go.mod h1:J+Gs4SYgM6CZQHDETBtE9HaSEkGmuNXF86RwHhHUvq4=
 github.com/lokks307-dev/go-util v1.0.11 h1:gwg/WBKGZCmowDUgvh+7VP5i7RPQwXTSJDicwPEZ3Bc=
 github.com/lokks307-dev/go-util v1.0.11/go.mod h1:YrfdSaoIzdkzXI1OXCch03me4jQsUwvcEXw+jvdtkA0=
+github.com/lokks307-dev/go-util v1.0.12-0.20210322063648-f1d92864ddf6 h1:LlglcKP7Y0F8K7pxUZZEHeXlRhMmYkHH+f4Ipz+w1us=
+github.com/lokks307-dev/go-util v1.0.12-0.20210322063648-f1d92864ddf6/go.mod h1:YrfdSaoIzdkzXI1OXCch03me4jQsUwvcEXw+jvdtkA0=
 github.com/lokks307/pkcs8 v0.0.0-20191211023012-cfc7eaf96ee1/go.mod h1:PdQHhdfBihPMSjAgMybW0EfaPqhzMbT0+q3aqHGdJP0=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/ginkgo v1.7.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
