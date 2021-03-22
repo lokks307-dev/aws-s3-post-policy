@@ -1,4 +1,4 @@
-module github.com/lokks307-dev/s3-post-policy
+module github.com/lokks307-dev/aws-s3-post-policy
 
 go 1.15
 
