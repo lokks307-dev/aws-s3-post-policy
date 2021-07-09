@@ -191,7 +191,7 @@ func (m *S3PostPolicy) GetPolicy() string {
 	builder.WriteString(`{ "expiration": `)
 	builder.WriteString(`"` + m.Expiration.UTC().Format(TIME_LAYOUT_EXPIRATION) + `"`)
 	builder.WriteString(",\n")
-	builder.WriteString("  \"condition\": [\n")
+	builder.WriteString("  \"conditions\": [\n")
 
 	for k := range m.Conditions {
 		builder.WriteString("    ")
