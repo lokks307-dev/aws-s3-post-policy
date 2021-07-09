@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/csv"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/lokks307-dev/go-util/bytesbuilder"
-	"github.com/lokks307-dev/go-util/djson"
 )
 
 type S3PostPolicyParams struct {
@@ -46,6 +46,30 @@ func (m *S3PostPolicy) Init() {
 	m.SetPolicyExpire(24)
 	if m.Config.BucketName != "" {
 		m.SetBucket(m.Config.BucketName)
+	}
+
+	if m.Config.AccessKeyID != "" && m.Config.Region != "" {
+		m.MakeCredential()
+	}
+}
+
+func (m *S3PostPolicy) Get(key string) (string, error) {
+	if key == "" {
+		return "", errors.New("empty key")
+	}
+
+	if val, ok := m.Conditions[key]; ok {
+		retStr := ""
+		switch realVal := val.(type) {
+		case []interface{}:
+			// TODO:
+		default:
+			retStr = fmt.Sprintf("%v", realVal)
+		}
+
+		return retStr, nil
+	} else {
+		return "", errors.New("key not found")
 	}
 }
 
@@ -163,36 +187,46 @@ func (m *S3PostPolicy) setElementCondition(matchExp, key, value string) {
 
 func (m *S3PostPolicy) GetPolicy() string {
 	m.MakeCredential()
-	conds := djson.NewDJSON(djson.JSON_ARRAY)
+	var builder strings.Builder
+	builder.WriteString(`{ "expiration": `)
+	builder.WriteString(`"` + m.Expiration.UTC().Format(TIME_LAYOUT_EXPIRATION) + `"`)
+	builder.WriteString(",\n")
+	builder.WriteString("  \"condition\": [\n")
+
 	for k := range m.Conditions {
+		builder.WriteString("    ")
 		switch val := m.Conditions[k].(type) {
 		case string:
-			conds.PutAsArray(djson.Object{k: val})
+			builder.WriteString(fmt.Sprintf("{%q: %q},\n", k, val))
 		case []string:
-			arr := djson.NewDJSON(djson.JSON_ARRAY)
+			str := ""
 			for i := range val {
-				arr.PutAsArray(val[i])
+				str += fmt.Sprintf("%q,", val[i])
 			}
-			conds.PutAsArray(arr)
+			str = strings.TrimRight(str, ",")
+			builder.WriteString(fmt.Sprintf("[%s],\n", str))
 		case []interface{}:
-			arr := djson.NewDJSON(djson.JSON_ARRAY)
+			str := ""
 			for i := range val {
-				arr.PutAsArray(val[i])
+				valStr := fmt.Sprintf("%v", val[i])
+				if reflect.TypeOf(val[i]).Kind() == reflect.String {
+					valStr = fmt.Sprintf("%q", valStr)
+				}
+				str += valStr
+				str += ","
 			}
-			conds.PutAsArray(arr)
+			str = strings.TrimRight(str, ",")
+			builder.WriteString(fmt.Sprintf("[%s],\n", str))
 		default:
 			fmt.Println("key:", k, " type:", reflect.ValueOf(m.Conditions[k]).Type())
 		}
 	}
 
-	out := djson.NewDJSON().Put(djson.Object{
-		"expiration": m.Expiration.UTC().Format(TIME_LAYOUT_EXPIRATION),
-		"conditions": conds,
-	})
+	semiPolicy := builder.String()
+	semiPolicy = strings.TrimRight(semiPolicy, ", \n\t")
+	semiPolicy += "\n  ]\n}"
 
-	out.SortDesc()
-
-	return base64.StdEncoding.EncodeToString([]byte(out.ToString()))
+	return base64.StdEncoding.EncodeToString([]byte(semiPolicy))
 }
 
 func (m *S3PostPolicy) MakeSigningKey() []byte {

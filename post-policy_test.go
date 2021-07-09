@@ -51,3 +51,17 @@ func TestAwsSample(t *testing.T) {
 func TestAccess(t *testing.T) {
 	LoadAccessKey("C:/shared/cathy_accessKeys.csv")
 }
+
+func TestAwsSig(t *testing.T) {
+	policy := NewS3PostPolicy(S3PostPolicyParams{
+		AccessKeyID:     "AKIAYD4BRK5ILU35AXKL",
+		AccessKeySecret: "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",
+		Region:          "ap-northeast-2",
+		BucketName:      "medieasebucket",
+	})
+
+	signKey := policy.MakeSigningKey()
+	policyStr := "eyAiZXhwaXJhdGlvbiI6ICIyMDIxLTA3LTA5VDE3OjE2OjA4LjAwNloiLA0KICAiY29uZGl0aW9ucyI6IFsNCiAgICB7ImFjbCI6InB1YmxpYy1yZWFkIn0sDQoJWyJzdGFydHMtd2l0aCIsIiRrZXkiLCJILWUyNmFiN2QwLTMyMGEtNGZhNi1iYjk5LWNjNzlmOWZjNDAxNy9hc3NldC8iXSwNCgl7IngtYW16LW1ldGEtdWlkIjoiVC0yMDIxLTAwMTIifSwNCgl7ImJ1Y2tldCI6Im1lZGllYXNlYnVja2V0In0sDQoJeyJ4LWFtei1hbGdvcml0aG0iOiJBV1M0LUhNQUMtU0hBMjU2In0sDQoJeyJ4LWFtei1kYXRlIjoiMjAyMTA3MDlUMDUxNjA4WiJ9LA0KCXsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFZRDRCUks1SUxVMzVBWEtMLzIwMjEwNzA5L2FwLW5vcnRoZWFzdC0yL3MzL2F3czRfcmVxdWVzdCJ9DQogIF0NCn0="
+	sig := policy.GenerateSignature(policyStr, signKey)
+	fmt.Println(sig)
+}
