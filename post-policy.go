@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lokks307-dev/go-util/bytesbuilder"
+	"github.com/lokks307/go-util/bytesbuilder"
 )
 
 type S3PostPolicyParams struct {
